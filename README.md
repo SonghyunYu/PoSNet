@@ -4,7 +4,7 @@ Pytorch Implementation of Songhyun Yu's algorithm
 AIM 2019 Video Temporal Super-Resolution Challenge 
 
 ## Related Work
-We modified [PWCNet](https://github.com/sniklaus/pytorch-pwc) ans [SpyNet](https://github.com/sniklaus/pytorch-spynet) of [Simon Niklaus](https://github.com/sniklaus)'s implementation. Thanks for open the code.
+In our work, we used the code of [PWCNet](https://github.com/sniklaus/pytorch-pwc) and [SpyNet](https://github.com/sniklaus/pytorch-spynet). Thanks to [Simon Niklaus](https://github.com/sniklaus) for releasing the source code.
 
 ## Environment  
   python 3.7   
