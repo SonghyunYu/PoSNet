@@ -15,8 +15,8 @@ AIM 2019 Video Temporal Super-Resolution Challenge
 ## Test
 Download Pre-trained models: [[download]](https://drive.google.com/open?id=18-39JPIN0w7rp7oewlQf8C0ur7oa4DxY)  
 and place them in the './models' folder.  
-for middle frame, use 'model_middle.pth.tar'.
-for side frame, use 'model_side_pth.tar'.
+for middle frame, use 'model_middle.pth.tar'
+for side frame, use 'model_side_pth.tar'
 
 Example:  
 ```
