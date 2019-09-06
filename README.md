@@ -1,5 +1,6 @@
 # PoSNet
 Pytorch Implementation of Songhyun Yu's algorithm
+
 AIM 2019 Video Temporal Super-Resolution Challenge 
 
 ## Related Work
@@ -15,13 +16,13 @@ AIM 2019 Video Temporal Super-Resolution Challenge
 ## Test
 Download Pre-trained models: [[download]](https://drive.google.com/open?id=18-39JPIN0w7rp7oewlQf8C0ur7oa4DxY)  
 and place them in the './models' folder.  
-for middle frame, use 'model_middle.pth.tar'
-for side frame, use 'model_side_pth.tar'
 
 Example:  
 ```
-python main_middle.py --cuda --eval
+python main_middle.py --cuda --eval  # to interpolate middle frame
+python main_side.py --cuda --eval  # to interpolate side frames
 ```
+
 
 ## Training
 To train your own model, you should prepare dataset.
