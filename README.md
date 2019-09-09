@@ -25,7 +25,7 @@ python main_side.py --cuda --eval  # to interpolate side frames
 
 
 ## Training
-To train your own model, you should prepare dataset.
+To train your own model, you should prepare dataset using prepare_data.py.
 
 Example:  
 ```
@@ -36,4 +36,4 @@ python main_middle.py --cuda
 
 
 ## Contact
-If you have any questions about the code or paper, please contact fkdlzmtld@gmail.com
+
