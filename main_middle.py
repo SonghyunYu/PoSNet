@@ -244,17 +244,11 @@ def eval(args):
     model = model.to(device)
     model.eval()
     total_time = 0
-    for i in range(0, num_img, 2):
+    for i in range(0, num_img):
         if i>0 and (i+1)%46 == 0:
             continue
         tensorFirst = np.array(imageio.imread(files[i])).transpose(2, 0, 1).astype(np.float32) * (1.0 / 255.0)
         tensorSecond = np.array(imageio.imread(files[i+1])).transpose(2, 0, 1).astype(np.float32) * (1.0 / 255.0)
-
-        plt.imshow(tensorFirst[:, :, :].transpose(1, 2, 0))
-        plt.show()
-        plt.imshow(tensorSecond[:, :, :].transpose(1, 2, 0))
-        plt.show()
-
 
         arrFirst = self_ensemble(tensorFirst, get_arr=True)
         arrSecond = self_ensemble(tensorSecond, get_arr=True)
@@ -296,7 +290,6 @@ def eval(args):
 
 if __name__ == '__main__':
     args = args_parser()
-    args.eval = True
     print(args)
     if not args.eval:
         train(args)

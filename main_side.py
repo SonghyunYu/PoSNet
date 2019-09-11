@@ -276,7 +276,7 @@ def eval(args):
                 f2 = Variable(torch.from_numpy(arrSecond[n]).float()).view(1, 3, arrSecond[n].shape[1], arrSecond[n].shape[2]).cuda()
 
                 start = time.time()
-                tensorOutput1, tensorOutput3 = model(tensorFirst, tensorSecond, 1)
+                tensorOutput1, tensorOutput3 = model(f1, f2, 1)
                 end = time.time()
                 total_time += (end-start)
                 ct += 1
@@ -323,7 +323,6 @@ def eval(args):
 if __name__ == '__main__':
     args = args_parser()
     print(args)
-    args.eval = 1
     if not args.eval:
         train(args)
     else:
