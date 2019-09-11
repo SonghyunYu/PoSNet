@@ -14,8 +14,7 @@ In our work, we used the code of [PWCNet](https://github.com/sniklaus/pytorch-pw
 
 
 ## Test
-Download Pre-trained models: [[download]](https://drive.google.com/open?id=18-39JPIN0w7rp7oewlQf8C0ur7oa4DxY)  
-and place them in the './models' folder.  
+Download Pre-trained models: [[download]](https://drive.google.com/folderview?id=18-39JPIN0w7rp7oewlQf8C0ur7oa4DxY) and place them in the './models' folder.  
 
 Example:  
 ```
