@@ -93,7 +93,7 @@ def train(args):
     val_loader = DataLoader(
         dataset=data_set3,
         batch_size=1,
-        shuffle=True,
+        shuffle=False,
         num_workers=args.num_worker,
         pin_memory=True
     )
@@ -120,14 +120,14 @@ def train(args):
         state = load_checkpoint('./models', is_best=False)
         epoch = state['epoch']
         global_iter = state['global_iter']
-        best_loss = state['best_loss']
+        best_psnr = state['best_psnr']
         optimizer.load_state_dict(state['optimizer'])
         model.load_state_dict(state['state_dict'])
 
         print('Model loaded at global_iter {}, epoch {}.'.format(global_iter, epoch))
     else:
         global_iter = 0
-        best_loss = np.Inf
+        best_psnr = 0
         print('Training from scratch...')
 
     # Tensorboard
@@ -225,14 +225,15 @@ def train(args):
                     print('global_iter:{:2d}, epoch:{:2d}({}/{}), loss: {:.4f}, PSNR1: {:.3f}dB, PSNR3: {:.3f}dB, PSNR1_val: {:.3f}dB, PSNR3_val: {:.3f}dB'.format(
                         global_iter, e, iter + 1, len(train_loader), loss_temp, psnr_temp1, psnr_temp3, avg_psnr1, avg_psnr3))
 
-                    is_best = True if loss_temp < best_loss else False
-                    best_loss = min(best_loss, loss_temp)
+                    avg_psnr = (avg_psnr1 + avg_psnr3) / 2
+                    is_best = True if avg_psnr > best_psnr else False
+                    best_psnr = max(best_psnr, avg_psnr)
                     state = {
                         'state_dict': model.state_dict(),
                         'epoch': e,
                         'global_iter': global_iter,
                         'optimizer': optimizer.state_dict(),
-                        'best_loss': best_loss
+                        'best_psnr': best_psnr
                     }
                     save_checkpoint(state, global_iter, path='./models', is_best=is_best, max_keep=20)
                     loss_temp, psnr_temp1, psnr_temp3 = 0, 0, 0
@@ -240,6 +241,7 @@ def train(args):
 
 
 def eval(args):
+    import imageio
     model = Mymodel_side()
     state = torch.load('./models/model_side.pth.tar')
     model.load_state_dict(state['state_dict'])
@@ -259,26 +261,19 @@ def eval(args):
         for i in range(0, num_img):
             if i>0 and (i+1)%46 == 0:
                 continue
-            tensorFirst = np.array(PIL.Image.open(files[i]))[:, :, ::-1].transpose(2, 0, 1).astype(np.float32) * (1.0 / 255.0)
-            tensorSecond = np.array(PIL.Image.open(files[i + 1]))[:, :, ::-1].transpose(2, 0, 1).astype(np.float32) * (1.0 / 255.0)
-            tensorFirst_ = np.zeros(tensorFirst.shape)
-            tensorFirst_[0, :, :] = tensorFirst[2, :, :]
-            tensorFirst_[1, :, :] = tensorFirst[1, :, :]
-            tensorFirst_[2, :, :] = tensorFirst[0, :, :]
-            tensorSecond_ = np.zeros(tensorSecond.shape)
-            tensorSecond_[0, :, :] = tensorSecond[2, :, :]
-            tensorSecond_[1, :, :] = tensorSecond[1, :, :]
-            tensorSecond_[2, :, :] = tensorSecond[0, :, :]
+            tensorFirst = np.array(imageio.imread(files[i])).transpose(2, 0, 1).astype(np.float32) * (1.0 / 255.0)
+            tensorSecond = np.array(imageio.imread(files[i + 1])).transpose(2, 0, 1).astype(np.float32) * (1.0 / 255.0)
 
-            arrFirst = self_ensemble(tensorFirst_, get_arr=True)
-            arrSecond = self_ensemble(tensorSecond_, get_arr=True)
+
+            arrFirst = self_ensemble(tensorFirst, get_arr=True)
+            arrSecond = self_ensemble(tensorSecond, get_arr=True)
             outData1 = []
             outData3 = []
 
             for n in range(8):
 
-                tensorFirst = Variable(torch.from_numpy(arrFirst[n]).float()).view(1, 3, arrFirst[n].shape[1], arrFirst[n].shape[2]).cuda()
-                tensorSecond = Variable(torch.from_numpy(arrSecond[n]).float()).view(1, 3, arrSecond[n].shape[1], arrSecond[n].shape[2]).cuda()
+                f1 = Variable(torch.from_numpy(arrFirst[n]).float()).view(1, 3, arrFirst[n].shape[1], arrFirst[n].shape[2]).cuda()
+                f2 = Variable(torch.from_numpy(arrSecond[n]).float()).view(1, 3, arrSecond[n].shape[1], arrSecond[n].shape[2]).cuda()
 
                 start = time.time()
                 tensorOutput1, tensorOutput3 = model(tensorFirst, tensorSecond, 1)
@@ -300,16 +295,8 @@ def eval(args):
             out1[out1 < 0] = 0
             out3[out3 > 1] = 1
             out3[out3 < 0] = 0
-
-            out1_ = np.zeros(out1.shape)
-            out1_[0, :, :] = out1[2, :, :]
-            out1_[1, :, :] = out1[1, :, :]
-            out1_[2, :, :] = out1[0, :, :]
-            out3_ = np.zeros(out3.shape)
-            out3_[0, :, :] = out3[2, :, :]
-            out3_[1, :, :] = out3[1, :, :]
-            out3_[2, :, :] = out3[0, :, :]
-
+            out1 = np.uint8(np.floor(out1 * 255 + 0.5))
+            out3 = np.uint8(np.floor(out3 * 255 + 0.5))
 
             last_num1 = int(file_names[i][-7] + file_names[i][-6] + file_names[i][-5]) + 2
             if last_num1 < 10:
@@ -319,7 +306,7 @@ def eval(args):
             else:
                 file_names1 = file_names[i][:-7] + str(last_num1) + '.png'
             out_name1 = os.path.join(out_path, file_names1)
-            PIL.Image.fromarray((out1_.transpose(1, 2, 0)[:, :, ::-1] * 255.0).astype(np.uint8)).save(out_name1)
+            imageio.imwrite(out_name1, out1.transpose(1, 2, 0))
 
             last_num3 = int(file_names[i][-7] + file_names[i][-6] + file_names[i][-5]) + 6
             if last_num3 < 10:
@@ -329,7 +316,7 @@ def eval(args):
             else:
                 file_names3 = file_names[i][:-7] + str(last_num3) + '.png'
             out_name3 = os.path.join(out_path, file_names3)
-            PIL.Image.fromarray((out3_.transpose(1, 2, 0)[:, :, ::-1] * 255.0).astype(np.uint8)).save(out_name3)
+            imageio.imwrite(out_name3, out3.transpose(1, 2, 0))
 
         print("time per image:", total_time/(ct*2))
 

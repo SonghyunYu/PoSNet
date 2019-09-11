@@ -23,6 +23,11 @@ def Backward_middle(tensorInput, tensorFlow):
                                                mode='bilinear', padding_mode='border')
 
 
+def normalize_output(img):
+    img = img - img.min()
+    img = img / img.max()
+    return img
+
 class Mymodel_middle(nn.Module):
     def __init__(self):
         super(Mymodel_middle, self).__init__()
@@ -49,12 +54,12 @@ class Mymodel_middle(nn.Module):
         data0_feat_warp = Backward_middle(data0_feat, flow0t)
         data1_feat_warp = Backward_middle(data1_feat, flow1t)
 
+
         if iter % 5000 == 0:
             plt.imshow(frame2_[0, :, :, :].cpu().detach().numpy().transpose(1, 2, 0))
             plt.show()
             plt.imshow(frame2__[0, :, :, :].cpu().detach().numpy().transpose(1, 2, 0))
             plt.show()
-
 
         concat = torch.cat((data0_feat_warp, data1_feat_warp, frame2_, frame2__, data0, flow0t, data1, flow1t), 1)
 
