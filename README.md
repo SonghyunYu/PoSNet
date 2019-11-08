@@ -1,7 +1,7 @@
 # PoSNet
 Pytorch Implementation of "[PoSNet: 4x video frame interpolation using position-specific flow]()"
 
-AIM 2019 Video Temporal Super-Resolution Challenge 
+This method took 3rd place at [AIM 2019 Video Temporal Super-Resolution Challenge])(http://www.vision.ee.ethz.ch/aim19/)
 
 ## Related Work
 In our work, we used the code of [PWCNet](https://github.com/sniklaus/pytorch-pwc) and [SpyNet](https://github.com/sniklaus/pytorch-spynet). Thanks to [Simon Niklaus](https://github.com/sniklaus) for releasing the implementations.
