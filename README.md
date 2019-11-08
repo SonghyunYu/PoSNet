@@ -1,5 +1,5 @@
 # PoSNet
-Pytorch Implementation of Songhyun Yu's algorithm
+Pytorch Implementation of "[PoSNet: 4x video frame interpolation using position-specific flow]()"
 
 AIM 2019 Video Temporal Super-Resolution Challenge 
 
