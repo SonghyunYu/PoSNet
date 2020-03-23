@@ -1,5 +1,5 @@
 # PoSNet
-Pytorch Implementation of "[PoSNet: 4x video frame interpolation using position-specific flow]()"
+Pytorch Implementation of "[PoSNet: 4x video frame interpolation using position-specific flow](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9022219)"
 
 This method took 3rd place at [AIM 2019 Video Temporal Super-Resolution Challenge](http://www.vision.ee.ethz.ch/aim19/)
 
